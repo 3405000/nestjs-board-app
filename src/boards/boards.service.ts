@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
+import { CreateBoardDTO } from './DTO/create-board.dto';
 
 @Injectable()
 export class BoardsService {
@@ -16,9 +17,11 @@ export class BoardsService {
     getBoardById(id: number): Board {
         return this.boards.find((board) => board.id == id)
     }
-    
+
     // CREATE: 게시글 작성 기능
-    createBoard(author: string, title: string, contents: string) {
+    createBoard(createBoardDTO: CreateBoardDTO) {
+        const {author, title, contents} = createBoardDTO;
+        
         const board: Board = {
             id: this.boards.length+1, // 임시
             author,

@@ -38,8 +38,14 @@ export class BoardsService {
         return savedBoard;
     }
 
+    // UPDATE: 게시글 수정 기능
+    updateBoardStatusById(id: number, status: BoardsStatus): Board {
+        const board = this.getBoardById(id)
+        board.status = status
+        return board
+    }
     // DELETE: 게시글 삭제 기능
     deleteBoardById(id: number) {
-        this.boards = this.boards.filter((board) => board.id != id);
+        this.boards = this.boards.filter((board) => board.id != id)
     }
 }

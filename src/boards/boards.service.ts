@@ -37,4 +37,9 @@ export class BoardsService {
         const savedBoard = this.boards.push(board);
         return savedBoard;
     }
+
+    // DELETE: 게시글 삭제 기능
+    deleteBoardById(id: number) {
+        this.boards = this.boards.filter((board) => board.id != id);
+    }
 }

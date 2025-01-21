@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
 
@@ -8,12 +8,19 @@ export class BoardsController {
     constructor(private boardsService: BoardsService) { }
     
     // 주입된 인스턴스는 메서드 내에서 사용
-    // 게시글 조회 기능
+    // READ: 게시글 조회 기능
     @Get('/')
     getAllBoards(): Board[] {
         return this.boardsService.getAllBoards();
     }
 
+    // 특정 게시글 조회 기능
+    @Get('/:id')
+    getBoardById(@Param('id') id: number): Board {
+        return this.boardsService.getBoardById(id);
+    }
+
+    // CREATE: 게시글 작성 기능
     @Post('/')
     createBoard (
         @Body('author') author: string,

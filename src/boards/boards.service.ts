@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
 import { CreateBoardDTO } from './DTO/create-board.dto';
@@ -16,7 +16,11 @@ export class BoardsService {
 
     // 특정 게시물 조회 기능
     getBoardById(id: number): Board {
-        return this.boards.find((board) => board.id == id)
+        const board = this.boards.find((board) => board.id == id)
+        if (!board) {
+            throw new NotFoundException(`Board with ID ${id} not found`)
+        }
+        return board
     }
 
     getBoardsByKeword(author: string): Board[] {

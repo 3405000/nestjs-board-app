@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
 import { CreateBoardDTO } from './DTO/create-board.dto';
+import { UpdateBoardDTO } from './DTO/update-board.dto';
 
 @Injectable()
 export class BoardsService {
@@ -39,6 +40,16 @@ export class BoardsService {
     }
 
     // UPDATE: 게시글 수정 기능
+    updateBoardById(id: number, updateBoardDTO: UpdateBoardDTO): Board {
+        const board = this.getBoardById(id)
+        const { title, contents } = updateBoardDTO
+
+        board.title = title
+        board.contents = contents
+
+        return board
+    }
+
     updateBoardStatusById(id: number, status: BoardsStatus): Board {
         const board = this.getBoardById(id)
         board.status = status

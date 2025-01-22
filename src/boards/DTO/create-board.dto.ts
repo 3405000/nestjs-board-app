@@ -6,8 +6,10 @@ export class CreateBoardDTO {
     author: string;
 
     @IsNotEmpty()
+    @IsString()
     title: string;
 
     @IsNotEmpty()
+    @IsString()
     contents: string;
 }

@@ -31,7 +31,7 @@ export class BoardsController {
     
     // CREATE: 게시글 작성 기능
     @Post('/')
-    @UsePipes(ValidationPipe)
+    // @UsePipes(ValidationPipe)
     createBoard(@Body() createBoardDTO: CreateBoardDTO) {
         return this.boardsService.createBoard(createBoardDTO)
     }

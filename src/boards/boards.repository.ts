@@ -23,4 +23,15 @@ export class BoardsRepository {
             throw new InternalServerErrorException('Database query failed', err)
         }
     }
+
+    async saveBoard(board: Board): Promise<string> {
+        const insertQuery = 'INSERT INTO BOARD(NAME, PHONE, EMAIL, MEMO, CREATE_AT, MODIFY AT) VALUES (?, ?, ?, ?)'
+        try {
+            const result = await this.connectionPool.query(insertQuery, [board.author, board.title, board.contents, board.status])
+            const message = "Created Success!"
+            return message
+        } catch(err) {
+            throw new InternalServerErrorException('Database query failed', err)
+        }
+    }
 }

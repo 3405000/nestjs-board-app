@@ -14,8 +14,8 @@ export class BoardsController {
     // 주입된 인스턴스는 메서드 내에서 사용
     // READ: 게시글 조회 기능
     @Get('/')
-    getAllBoards(): Board[] {
-        return this.boardsService.getAllBoards();
+    async getAllBoards(): Promise<Board[]> {
+        return await this.boardsService.getAllBoards();
     }
 
     // 특정 게시글 조회 기능

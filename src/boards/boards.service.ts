@@ -34,19 +34,18 @@ export class BoardsService {
     }
 
     // CREATE: 게시글 작성 기능
-    createBoard(createBoardDTO: CreateBoardDTO) {
+    async createBoard(createBoardDTO: CreateBoardDTO): Promise<string> {
         const {author, title, contents} = createBoardDTO;
         
         const board: Board = {
-            id: this.boards.length+1, // 임시
-            author,
-            title,
-            contents,
+            id: 0, // 임시
+            author, // author: createBoardDTO.author
+            title, // title: createBoardDTO.title
+            contents, // contents: createBoardDTO.contents
             status: BoardsStatus.PUBLIC
         }
-
-        const savedBoard = this.boards.push(board);
-        return savedBoard;
+        const message = await this.boardsRepository.saveBoard(board)
+        return message;
     }
 
     // UPDATE: 게시글 수정 기능

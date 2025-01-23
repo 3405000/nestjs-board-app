@@ -3,18 +3,16 @@ import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
 import { CreateBoardDTO } from './DTO/create-board.dto';
 import { UpdateBoardDTO } from './DTO/update-board.dto';
-
+import { BoardsRepository } from './boards.repository'
 @Injectable()
 export class BoardsService {
     // 데이터베이스
-    private boards: Board[] = [];
+    // private boards: Board[] = [];
+    constructor(private boardsRepository: BoardsRepository) { }
 
     // READ: 게시글 조회 기능
-    getAllBoards(): Board[] {
-        const boards = this.boards
-        if (boards.length == 0) {
-            throw new NotFoundException(`Board not found`)
-        }
+    async getAllBoards(): Promise<Board[]> {
+        const boards = await this.boardsRepository.findAll();
         return boards
     }
 

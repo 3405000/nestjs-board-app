@@ -5,6 +5,7 @@ import { CreateBoardDTO } from './DTO/create-board.dto';
 import { BoardsStatus } from './boards-status.enum';
 import { UpdateBoardDTO } from './DTO/update-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
+import { BoardResponseDTO } from './board-response.dto';
 
 @Controller('api/boards')
 export class BoardsController {
@@ -14,8 +15,11 @@ export class BoardsController {
     // 주입된 인스턴스는 메서드 내에서 사용
     // READ: 게시글 조회 기능
     @Get('/')
-    async getAllBoards(): Promise<Board[]> {
-        return await this.boardsService.getAllBoards();
+    async getAllBoards(): Promise<BoardResponseDTO[]> {
+        const boards: Board[] = await this.boardsService.getAllBoards();
+        const boardsResponseDTO = boards.map(board => new BoardResponseDTO(board))
+
+        return boardsResponseDTO
     }
 
     // 특정 게시글 조회 기능

@@ -3,7 +3,6 @@ import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
 import { CreateBoardDTO } from './DTO/create-board.dto';
 import { UpdateBoardDTO } from './DTO/update-board.dto';
-import { BoardsRepository } from './boards.repository'
 @Injectable()
 export class BoardsService {
     // 데이터베이스

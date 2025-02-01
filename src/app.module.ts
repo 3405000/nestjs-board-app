@@ -1,20 +1,13 @@
 import { Module } from '@nestjs/common';
 import { BoardsModule } from './boards/boards.module';
-import { ConfigModule } from '@nestjs/config';
-import { databaseConfig } from './config/database.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeORMConfig } from './config/typeorm.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    TypeOrmModule.forRoot(typeORMConfig),
     BoardsModule,
   ],
-  providers: [
-    {
-      provide: 'DATABASE_CONFIG',
-      useValue: databaseConfig,
-    },
-  ],
-  exports: ['DATABASE_CONFIG'],
 })
 export class AppModule {}
 

@@ -3,11 +3,16 @@ import { Board } from './boards.entity';
 import { BoardsStatus } from './boards-status.enum';
 import { CreateBoardDTO } from './DTO/create-board.dto';
 import { UpdateBoardDTO } from './DTO/update-board.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 @Injectable()
 export class BoardsService {
     // 데이터베이스
     // private boards: Board[] = [];
-    constructor(private boardsRepository: BoardsRepository) { }
+    constructor(
+        @InjectRepository(Board) 
+        private boardsRepository: Repository<Board>
+    ) { }
 
     // READ: 게시글 조회 기능
     async getAllBoards(): Promise<Board[]> {

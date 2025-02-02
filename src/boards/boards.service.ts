@@ -16,29 +16,36 @@ export class BoardsService {
 
     // READ: 게시글 조회 기능
     async getAllBoards(): Promise<Board[]> {
-        const boards = await this.boardsRepository.findAll();
+        const boards = await this.boardsRepository.find()
         return boards
     }
 
-    // // 특정 게시물 조회 기능
-    // getBoardById(id: number): Board {
-    //     const board = this.boards.find((board) => board.id == id)
-    //     if (!board) {
-    //         throw new NotFoundException(`Board with ID ${id} not found`)
-    //     }
-    //     return board
-    // }
+    // 특정 게시물 조회 기능
+    getBoardById(id: number): Promise<Board> {
+        const board = this.boardsRepository.findOneBy({ id: id })
+        if (!board) {
+            throw new NotFoundException(`Board with ID ${id} not found`)
+        }
+        return board
+    }
 
-    // getBoardsByKeword(author: string): Board[] {
-    //     const boards = this.boards.filter((board) => board.author == author)
-    //     if (boards.length == 0) {
-    //         throw new NotFoundException(`Board with author ${author} not found`)
-    //     }
-    //     return this.boards.filter((board) => board.author == author)
-    // }
+    // 작성자(keyword)로 검색해 게시글 조회
+    async getBoardsByKeword(author: string): Promise<Board[]> {
+        if (!author) {
+            throw new BadRequestException('Author keyword must be provided')
+        }
+
+        const boards = await this.boardsRepository.findBy({ author: author })
+
+        if (boards.length == 0) {
+            throw new NotFoundException(`No boards found for author: ${author}`)
+        }
+
+        return boards
+    }
 
     // CREATE: 게시글 작성 기능
-    async createBoard(createBoardDTO: CreateBoardDTO): Promise<string> {
+    async createBoard(createBoardDTO: CreateBoardDTO): Promise<Board> {
         const {author, title, contents} = createBoardDTO;
         
         const board: Board = {
@@ -48,47 +55,36 @@ export class BoardsService {
             contents, // contents: createBoardDTO.contents
             status: BoardsStatus.PUBLIC
         }
-        const message = await this.boardsRepository.saveBoard(board)
-        return message;
+        
+        return await this.boardsRepository.save(board)
     }
 
-    // // UPDATE: 게시글 수정 기능
-    // updateBoardById(id: number, updateBoardDTO: UpdateBoardDTO): Board {
-    //     const board = this.getBoardById(id)
-    //     const { title, contents } = updateBoardDTO
+    // UPDATE: 게시글 수정 기능
+    async updateBoardById(id: number, updateBoardDTO: UpdateBoardDTO): Promise<Board> {
+        const board = await this.getBoardById(id)
+        const { title, contents } = updateBoardDTO
 
-    //     const errors = [];
-    //     if (!title) {
-    //         errors.push('Title is required');
-    //     }
-    //     if (!contents) {
-    //         errors.push('Contents are required');
-    //     }
+        if (!title || !contents) {
+            throw new BadRequestException('Title and contents must be provided')
+        }
 
-    //     if (errors.length > 0) {
-    //         throw new BadRequestException(errors.join(', ')); // 모든 에러를 한 번에 반환
-    //     }
+        board.title = title
+        board.contents = contents
 
-    //     board.title = title
-    //     board.contents = contents
+        return this.boardsRepository.save(board)
+    }
 
-    //     return board
-    // }
+    async updateBoardStatusById(id: number, status: BoardsStatus): Promise<void> {
+        const result = await this.boardsRepository.update(id, { status })
 
-    // updateBoardStatusById(id: number, status: BoardsStatus): Board {
-    //     const board = this.getBoardById(id)
+        if (result.affected == 0) {
+            throw new NotFoundException(`Board with ID ${id} not found`)
+        }
+    }
 
-    //     if (!status) {
-    //         throw new BadRequestException('Status is required')
-    //     }
-
-    //     board.status = status
-    //     return board
-    // }
-
-    // // DELETE: 게시글 삭제 기능
-    // deleteBoardById(id: number) {
-    //     this.getBoardById(id)
-    //     this.boards = this.boards.filter((board) => board.id != id)
-    // }
+    // DELETE: 게시글 삭제 기능
+    async deleteBoardById(id: number): Promise<void> {
+        const board = await this.getBoardById(id)
+        await this.boardsRepository.delete(board)
+    }
 }

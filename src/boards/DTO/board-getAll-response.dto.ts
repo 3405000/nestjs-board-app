@@ -1,4 +1,5 @@
-import { Board } from "./boards.entity"
+import { Board } from "../boards.entity"
+
 
 export class BoardResponseDTO {
     title: string

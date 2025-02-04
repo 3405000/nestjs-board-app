@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,10 +6,16 @@ import { CreateUserDTO } from './DTO/create-user.dto';
 import { UserRole } from './users-role.enum';
 import * as bcrypt from 'bcryptjs';
 import { LoginUserDTO } from './DTO/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectRepository(User) private userRepository: Repository<User>){}
+    constructor(
+        @InjectRepository(User) 
+        private userRepository: Repository<User>,
+        private jwtService: JwtService
+    ){}
 
     // 회원가입 기능
     async createUser(createUserDTO: CreateUserDTO): Promise<User> {
@@ -23,23 +29,42 @@ export class AuthService {
         const user: User = {
             id: 0,
             username,
-            password,
+            password: hashedPassword,
             email,
             role: UserRole.USER
         }
-        return user
+        return await this.userRepository.save(user)
     }
 
     // 로그인 기능
     async signIn(loginUserDTO: LoginUserDTO): Promise<string> {
         const { email, password } = loginUserDTO
-        const existingUser = await this.findUserByEmail(email);
 
-        if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
-            throw new UnauthorizedException('Invalid credentials')
+        try {
+            const existingUser = await this.findUserByEmail(email);
+    
+            // if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
+            //     throw new UnauthorizedException('Invalid credentials')
+            // }
+            if (!existingUser) {
+                throw new UnauthorizedException('email err')
+            } else if (!(await bcrypt.compare(password, existingUser.password))) {
+                throw new UnauthorizedException('password err')
+            }
+    
+            // 1. JWT 토큰 생성
+            const payload = {
+                email: existingUser.email,
+                username: existingUser.username,
+                role: existingUser.role
+            }
+
+            // accessToken
+            return await this.jwtService.sign(payload) 
+
+        } catch (error) {
+            throw error;
         }
-
-        return "Login success"
     }
 
     async findUserByEmail(email: string): Promise<User> {

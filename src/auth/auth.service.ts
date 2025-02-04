@@ -1,10 +1,11 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDTO } from './DTO/create-user.dto';
 import { UserRole } from './users-role.enum';
 import * as bcrypt from 'bcryptjs';
+import { LoginUserDTO } from './DTO/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
         }
         await this.checkEmailExist(email)
         const hashedPassword = await this.hashPassword(password)
-        
+
         const user: User = {
             id: 0,
             username,
@@ -27,6 +28,27 @@ export class AuthService {
             role: UserRole.USER
         }
         return user
+    }
+
+    // 로그인 기능
+    async signIn(loginUserDTO: LoginUserDTO): Promise<string> {
+        const { email, password } = loginUserDTO
+        const existingUser = await this.findUserByEmail(email);
+
+        if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
+            throw new UnauthorizedException('Invalid credentials')
+        }
+
+        return "Login success"
+    }
+
+    async findUserByEmail(email: string): Promise<User> {
+        const existingUser = await this.userRepository.findOne({ where: { email } })
+        if (!existingUser) {
+            throw new NotFoundException('User not found')
+        }
+
+        return existingUser
     }
 
     async checkEmailExist(email: string): Promise<void> {

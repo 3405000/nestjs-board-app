@@ -3,9 +3,11 @@ import { BoardsModule } from './boards/boards.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
+import { GlobalModule } from 'global.module';
 
 @Module({
   imports: [
+    GlobalModule,
     TypeOrmModule.forRoot(typeORMConfig),
     BoardsModule,
     AuthModule,

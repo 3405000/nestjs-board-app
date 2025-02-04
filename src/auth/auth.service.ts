@@ -43,13 +43,8 @@ export class AuthService {
         try {
             const existingUser = await this.findUserByEmail(email);
     
-            // if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
-            //     throw new UnauthorizedException('Invalid credentials')
-            // }
-            if (!existingUser) {
-                throw new UnauthorizedException('email err')
-            } else if (!(await bcrypt.compare(password, existingUser.password))) {
-                throw new UnauthorizedException('password err')
+            if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
+                throw new UnauthorizedException('Invalid credentials')
             }
     
             // 1. JWT 토큰 생성

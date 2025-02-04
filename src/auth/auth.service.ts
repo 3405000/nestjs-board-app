@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +15,7 @@ export class AuthService {
         if (!username || !password || !email || !role) {
             throw new BadRequestException('Something went wrong')
         }
+        await this.checkEmailExist(email)
 
         const user: User = {
             id: 0,
@@ -24,5 +25,12 @@ export class AuthService {
             role: UserRole.USER
         }
         return user
+    }
+
+    async checkEmailExist(email: string): Promise<void> {
+        const existingUser = await this.userRepository.findOne({ where: { email }});
+        if (existingUser) {
+            throw new ConflictException('Email already exists')
+        }
     }
 }

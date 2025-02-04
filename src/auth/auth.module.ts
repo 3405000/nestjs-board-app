@@ -6,6 +6,7 @@ import { User } from './users.entity'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import * as dotenv from 'dotenv' // 환경변수 사용 목적
+import { JwtStrategy } from './jwt.strategy'
 
 dotenv.config() // 환경변수 사용 목적
 @Module({
@@ -20,6 +21,7 @@ dotenv.config() // 환경변수 사용 목적
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtModule, PassportModule]
 })
 export class AuthModule {}

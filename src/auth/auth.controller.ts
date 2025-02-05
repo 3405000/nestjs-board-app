@@ -5,6 +5,8 @@ import { UserResponseDTO } from './DTO/user-response.dto';
 import { LoginUserDTO } from './DTO/login-user.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from './users.entity';
+import { GetUser } from './get-user.decorator';
 
 @Controller('api/auth')
 export class AuthController {
@@ -34,8 +36,9 @@ export class AuthController {
 
     @Post('/test')
     @UseGuards(AuthGuard('jwt')) //@UseGuards는 해당 인증 가드가 적용되는 부분 표시, AuthGuard는 인증가드가 어떤 전략을 사용할지 결정
-    testForAuth(@Req() req: Request) {
-        console.log(req.user)
-        return { message: 'Authenticated User', user: req.user }
+    testForAuth(@GetUser() user: User) {
+        console.log(user)
+        console.log(user.email)
+        return { message: 'Authenticated User', user: user }
     }
 }

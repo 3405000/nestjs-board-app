@@ -1,14 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { BoardsService } from './boards.service';
-import { Board } from './boards.entity';
-import { CreateBoardDTO } from './DTO/create-board.dto';
-import { BoardsStatus } from './boards-status.enum';
-import { UpdateBoardDTO } from './DTO/update-board.dto';
-import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
-import { BoardResponseDTO } from './DTO/board-response.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
+import { BoardsService } from './boards.service'
+import { Board } from './boards.entity'
+import { CreateBoardDTO } from './DTO/create-board.dto'
+import { BoardsStatus } from './boards-status.enum'
+import { UpdateBoardDTO } from './DTO/update-board.dto'
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
+import { BoardResponseDTO } from './DTO/board-response.dto'
+import { AuthGuard } from '@nestjs/passport'
+import { RolesGuard } from 'src/auth/custom-role.guard'
+import { Roles } from 'src/auth/roles.decorator'
+import { UserRole } from 'src/auth/users-role.enum'
 
 
 @Controller('api/boards')
+@UseGuards(AuthGuard(), RolesGuard)
 export class BoardsController {
     // 생성자 주입
     constructor(private boardsService: BoardsService) { }
@@ -25,6 +30,7 @@ export class BoardsController {
 
     // 특정 게시글 조회 기능
     @Get('/:id')
+    @Roles(UserRole.USER) // 로그인 유저가 USER만 접근 가능
     async getBoardById(@Param('id') id: number): Promise<BoardResponseDTO> {
         return new BoardResponseDTO(await this.boardsService.getBoardById(id))
     }

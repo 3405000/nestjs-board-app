@@ -30,13 +30,22 @@ export class BoardsController {
         return boardsResponseDTO
     }
 
+    // 나의 게시글 조회 기능
+    @Get('/myBoards')
+    async getMyAllBoards(@GetUser() logginedUser: User): Promise<BoardResponseDTO[]> {
+        const boards: Board[] = await this.boardsService.getMyAllBoards(logginedUser);
+        const boardsResponseDTO = boards.map(board => new BoardResponseDTO(board))
+
+        return boardsResponseDTO
+    }
+    
     // 특정 게시글 조회 기능
     @Get('/:id')
     @Roles(UserRole.USER) // 로그인 유저가 USER만 접근 가능
     async getBoardById(@Param('id') id: number): Promise<BoardResponseDTO> {
         return new BoardResponseDTO(await this.boardsService.getBoardById(id))
     }
-
+    
     @Get('/search/:keyword')
     async getBoardsByKeword(@Query('author') author: string): Promise<BoardResponseDTO[]> {
         const boards: Board[] = await this.boardsService.getBoardsByKeword(author)
@@ -69,4 +78,4 @@ export class BoardsController {
         await this.boardsService.deleteBoardById(id);
     }
 }
-
+    

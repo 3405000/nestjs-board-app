@@ -31,7 +31,8 @@ export class AuthService {
             username,
             password: hashedPassword,
             email,
-            role: UserRole.USER
+            role: UserRole.USER,
+            boards: []
         }
         return await this.userRepository.save(user)
     }

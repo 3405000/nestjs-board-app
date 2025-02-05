@@ -1,20 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { BoardsStatus } from "./boards-status.enum";
+import { User } from "src/auth/users.entity";
 
 @Entity()
 export class Board {
     @PrimaryGeneratedColumn() // PK & auto Increment
-    id: number;
+    id: number
 
     @Column() // General Column
-    author: string;
+    author: string
 
     @Column()
-    title: string;
+    title: string
 
     @Column()
-    contents: string;
+    contents: string
 
     @Column()
-    status: BoardsStatus;
+    status: BoardsStatus
+
+    @ManyToOne(Type => User, user => user.boards, { eager: false })
+    user: User
 }

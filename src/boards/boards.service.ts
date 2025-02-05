@@ -53,7 +53,8 @@ export class BoardsService {
             author, // author: createBoardDTO.author
             title, // title: createBoardDTO.title
             contents, // contents: createBoardDTO.contents
-            status: BoardsStatus.PUBLIC
+            status: BoardsStatus.PUBLIC,
+            user: null
         }
         
         return await this.boardsRepository.save(board)

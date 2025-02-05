@@ -66,8 +66,9 @@ export class BoardsController {
         return new BoardResponseDTO(await this.boardsService.updateBoardById(id, updateBoardDTO))
     }
 
-    // 특정 번호의 게시글 status 수정
+    // 특정 번호의 게시글 status 수정 (관리자만 가능)
     @Patch('/:id')
+    @Roles(UserRole.ADMIN)
     async updateBoardStatusById(@Param('id') id: number, @Body('status', BoardStatusValidationPipe) status:  BoardsStatus): Promise<void> {
         await this.boardsService.updateBoardStatusById(id, status)
     }

@@ -10,6 +10,8 @@ import { AuthGuard } from '@nestjs/passport'
 import { RolesGuard } from 'src/auth/custom-role.guard'
 import { Roles } from 'src/auth/roles.decorator'
 import { UserRole } from 'src/auth/users-role.enum'
+import { GetUser } from 'src/auth/get-user.decorator'
+import { User } from 'src/auth/users.entity'
 
 
 @Controller('api/boards')
@@ -44,8 +46,8 @@ export class BoardsController {
     // CREATE: 게시글 작성 기능
     @Post('/')
     // @UsePipes(ValidationPipe)
-    async createBoard(@Body() createBoardDTO: CreateBoardDTO): Promise<BoardResponseDTO> {
-        return new BoardResponseDTO(await this.boardsService.createBoard(createBoardDTO))
+    async createBoard(@Body() createBoardDTO: CreateBoardDTO, @GetUser() logginedUser: User): Promise<BoardResponseDTO> {
+        return new BoardResponseDTO(await this.boardsService.createBoard(createBoardDTO, logginedUser))
     }
 
     // UPDATE: 게시글 수정 기능

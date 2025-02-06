@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,8 @@ import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name)
+
     constructor(
         @InjectRepository(User) 
         private userRepository: Repository<User>,
@@ -19,6 +21,8 @@ export class AuthService {
 
     // 회원가입 기능
     async createUser(createUserDTO: CreateUserDTO): Promise<User> {
+        this.logger.verbose(`Visitor is creating a new account with title: ${createUserDTO.email}`)
+
         const { username, password, email, role } = createUserDTO
         if (!username || !password || !email || !role) {
             throw new BadRequestException('Something went wrong')
@@ -26,19 +30,23 @@ export class AuthService {
         await this.checkEmailExist(email)
         const hashedPassword = await this.hashPassword(password)
 
-        const user: User = {
-            id: 0,
+        const user = this.userRepository.create({
             username,
             password: hashedPassword,
             email,
             role: UserRole.USER,
-            boards: []
-        }
-        return await this.userRepository.save(user)
+        })
+        
+        const createdUser = await this.userRepository.save(user)
+
+        this.logger.verbose(`New account email with ${createdUser.email} created Successfully`);
+        return createdUser
     }
 
     // 로그인 기능
     async signIn(loginUserDTO: LoginUserDTO): Promise<string> {
+        this.logger.verbose(`User with email: ${loginUserDTO.email} is signing in`)
+
         const { email, password } = loginUserDTO
 
         try {
@@ -56,9 +64,12 @@ export class AuthService {
             }
 
             // accessToken
-            return await this.jwtService.sign(payload) 
+            const accessToken = this.jwtService.sign(payload) 
+            this.logger.verbose(`User with email: ${loginUserDTO.email} issued JWT ${accessToken}`)
+            return accessToken
 
         } catch (error) {
+            this.logger.error(`Invalid credentials or Internal Server error`)
             throw error;
         }
     }

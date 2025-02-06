@@ -1,11 +1,11 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
-import { User } from './users.entity';
+import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDTO } from './DTO/create-user.dto';
-import { UserRole } from './users-role.enum';
+import { SignUpRequestDTO } from './DTO/sign-up-request.dto';
+import { UserRole } from './user-role.enum';
 import * as bcrypt from 'bcryptjs';
-import { LoginUserDTO } from './DTO/login-user.dto';
+import { SignInUserDTO } from './DTO/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
@@ -20,10 +20,10 @@ export class AuthService {
     ){}
 
     // 회원가입 기능
-    async createUser(createUserDTO: CreateUserDTO): Promise<User> {
-        this.logger.verbose(`Visitor is creating a new account with title: ${createUserDTO.email}`)
+    async createUser(signUpUserDTO: SignUpRequestDTO): Promise<User> {
+        this.logger.verbose(`Visitor is creating a new account with title: ${signUpUserDTO.email}`)
 
-        const { username, password, email, role } = createUserDTO
+        const { username, password, email, role } = signUpUserDTO
         if (!username || !password || !email || !role) {
             throw new BadRequestException('Something went wrong')
         }
@@ -44,10 +44,10 @@ export class AuthService {
     }
 
     // 로그인 기능
-    async signIn(loginUserDTO: LoginUserDTO): Promise<string> {
-        this.logger.verbose(`User with email: ${loginUserDTO.email} is signing in`)
+    async signIn(signInUserDTO: SignInUserDTO): Promise<string> {
+        this.logger.verbose(`User with email: ${signInUserDTO.email} is signing in`)
 
-        const { email, password } = loginUserDTO
+        const { email, password } = signInUserDTO
 
         try {
             const existingUser = await this.findUserByEmail(email);
@@ -65,7 +65,7 @@ export class AuthService {
 
             // accessToken
             const accessToken = this.jwtService.sign(payload) 
-            this.logger.verbose(`User with email: ${loginUserDTO.email} issued JWT ${accessToken}`)
+            this.logger.verbose(`User with email: ${signInUserDTO.email} issued JWT ${accessToken}`)
             return accessToken
 
         } catch (error) {

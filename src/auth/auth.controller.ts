@@ -1,12 +1,9 @@
 import { Body, Controller, Logger, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDTO } from './DTO/create-user.dto';
+import { SignUpRequestDTO } from './DTO/sign-up-request.dto';
 import { UserResponseDTO } from './DTO/user-response.dto';
-import { LoginUserDTO } from './DTO/login-user.dto';
+import { SignInUserDTO } from './DTO/sign-in-request.dto';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from './users.entity';
-import { GetUser } from './get-user.decorator';
 
 @Controller('api/auth')
 export class AuthController {
@@ -16,10 +13,10 @@ export class AuthController {
 
     // 회원 가입 기능
     @Post('/signup')
-    async createUser(@Body() createUserDTO: CreateUserDTO): Promise<UserResponseDTO> {
-        this.logger.verbose(`Visitor is try to creating a new account with title: ${createUserDTO.email}`)
+    async createUser(@Body() signUpUserDTO: SignUpRequestDTO): Promise<UserResponseDTO> {
+        this.logger.verbose(`Visitor is try to creating a new account with title: ${signUpUserDTO.email}`)
 
-        const userResponseDTO = new UserResponseDTO(await this.authService.createUser(createUserDTO))
+        const userResponseDTO = new UserResponseDTO(await this.authService.createUser(signUpUserDTO))
 
         this.logger.verbose(`New account email with ${userResponseDTO.email} created Successfully`)
         return userResponseDTO
@@ -27,10 +24,10 @@ export class AuthController {
 
     // 로그인 기능
     @Post('/signin')
-    async signIn(@Body() loginUserDTO: LoginUserDTO, @Res() res: Response): Promise<void> {
-        this.logger.verbose(`User with email: ${loginUserDTO.email} is try to signing in`)
+    async signIn(@Body() signInUserDTO: SignInUserDTO, @Res() res: Response): Promise<void> {
+        this.logger.verbose(`User with email: ${signInUserDTO.email} is try to signing in`)
 
-        const accessToken = await this.authService.signIn(loginUserDTO)
+        const accessToken = await this.authService.signIn(signInUserDTO)
 
         // 2. JWT를 쿠키에 저장
         // res.cookie('Authorization', accessToken, {
@@ -45,6 +42,6 @@ export class AuthController {
         res.setHeader('Authorization', accessToken)
         res.send({ message: "Login Success", accessToken})
 
-        this.logger.verbose(`User with email: ${loginUserDTO.email} issued JWT ${accessToken}`)
+        this.logger.verbose(`User with email: ${signInUserDTO.email} issued JWT ${accessToken}`)
     }
 }

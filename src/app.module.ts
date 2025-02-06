@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { BoardsModule } from './boards/boards.module'
+import { ArticleModule } from './article/article.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { typeORMConfig } from './config/typeorm.config'
 import { AuthModule } from './auth/auth.module'
@@ -12,7 +12,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
   imports: [
     GlobalModule,
     TypeOrmModule.forRoot(typeORMConfig),
-    BoardsModule,
+    ArticleModule,
     AuthModule,
   ],
   providers: [

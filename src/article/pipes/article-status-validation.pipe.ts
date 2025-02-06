@@ -1,11 +1,11 @@
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
-import { BoardsStatus } from '../boards-status.enum';
+import { ArticleStatus } from '../article-status.enum';
 
 @Injectable()
-export class BoardStatusValidationPipe implements PipeTransform {
+export class ArticlesStatusValidationPipe implements PipeTransform {
     private statusOptions = [
-        BoardsStatus.PRIVATE,
-        BoardsStatus.PUBLIC
+        ArticleStatus.PRIVATE,
+        ArticleStatus.PUBLIC
     ]
 
     transform(value: any, metadata: ArgumentMetadata) {
@@ -23,6 +23,6 @@ export class BoardStatusValidationPipe implements PipeTransform {
     }
 
     private isStatusValid(status: string): boolean {
-        return this.statusOptions.includes(status as BoardsStatus)
+        return this.statusOptions.includes(status as ArticleStatus)
     }
 }

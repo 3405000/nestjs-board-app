@@ -5,7 +5,7 @@ import { CreateArticleRequestDTO } from './DTO/create-article-request.dto';
 import { UpdateArticleRequestDTO } from './DTO/update-article-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/user/user.entity';
 import { SearchArticleResponseDto } from './DTO/search-article-response.dto';
 @Injectable()
 export class ArticleService {

@@ -1,13 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserRole } from "./user-role.enum";
+import { UserRole } from "../user/user-role.enum";
 import { Reflector } from "@nestjs/core";
-import { User } from "./user.entity";
+import { User } from "../user/user.entity";
 import { ROLES_KEY } from "./roles.decorator";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(private reflector: Reflector) {}
+    constructor(private reflector: Reflector) { }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         // 핸들러 메서드 또는 클래스 자체에 설정된 역할 가져오기
@@ -15,7 +15,7 @@ export class RolesGuard implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ])
-        
+
         // 설정된 역할이 없는 경우, 접근 전체 허용
         if (!requireRoles) {
             return true

@@ -20,7 +20,7 @@ export class ArticleService {
 
     // CREATE
     // 게시글 작성 기능
-    async createArticle(createArticleDTO: CreateArticleRequestDTO, logginedUser: User): Promise<Article> {
+    async createArticle(createArticleDTO: CreateArticleRequestDTO, logginedUser: User): Promise<void> {
         this.logger.verbose(`User: ${logginedUser.username} is creating a new article with title : %${createArticleDTO.title}`)
         
         const { title, contents } = createArticleDTO;
@@ -35,10 +35,9 @@ export class ArticleService {
             status: ArticleStatus.PUBLIC,
             user: logginedUser
         })
-        const createdArticle = await this.articlesRepository.save(article)
+        await this.articlesRepository.save(article)
 
-        this.logger.verbose(`Article titie with ${createdArticle.title} created successfully`)
-        return createdArticle
+        this.logger.verbose(`Article titie with ${article.title} created successfully`)
     }
 
     // READ
@@ -110,7 +109,7 @@ export class ArticleService {
 
     // UPDATE
     // 게시글 수정 기능
-    async updateArticleById(id: number, updateArticleDTO: UpdateArticleRequestDTO): Promise<Article> {
+    async updateArticleById(id: number, updateArticleDTO: UpdateArticleRequestDTO): Promise<void> {
         this.logger.verbose(`Updating a article by id: ${id}`)
         
         const article = await this.getArticleById(id)
@@ -123,10 +122,9 @@ export class ArticleService {
         article.title = title
         article.contents = contents
 
-        const updatedArticle = await this.articlesRepository.save(article)
+        await this.articlesRepository.save(article)
 
         this.logger.verbose(`Updating a article by id: ${id} successfully`)
-        return updatedArticle
     }
 
     async updateArticleStatusById(id: number, status: ArticleStatus): Promise<void> {

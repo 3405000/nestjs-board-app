@@ -16,7 +16,7 @@ export class UserService {
     ) { }
 
     // 회원가입 기능
-    async createUser(createUserRequestDTO: CreateUserRequestDTO): Promise<User> {
+    async createUser(createUserRequestDTO: CreateUserRequestDTO): Promise<void> {
         this.logger.verbose(`Visitor is creating a new account with title: ${createUserRequestDTO.email}`)
 
         const { username, password, email, role } = createUserRequestDTO
@@ -33,14 +33,13 @@ export class UserService {
             role: UserRole.USER,
         })
 
-        const createdUser = await this.userRepository.save(user)
+         await this.userRepository.save(user)
 
-        this.logger.verbose(`New account email with ${createdUser.email} created Successfully`);
-        return createdUser
+        this.logger.verbose(`New account email with ${user.email} created Successfully`)
     }
 
     async checkEmailExist(email: string): Promise<void> {
-        const existingUser = await this.userRepository.findOne({ where: { email } });
+        const existingUser = await this.userRepository.findOne({ where: { email } })
         if (existingUser) {
             throw new ConflictException('Email already exists')
         }

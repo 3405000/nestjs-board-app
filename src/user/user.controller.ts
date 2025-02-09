@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common'
+import { Body, Controller, HttpStatus, Logger, Post } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserRequestDTO } from 'src/user/DTO/create-user-request.dto'
 import { UserResponseDTO } from 'src/auth/DTO/user-response.dto'
@@ -14,9 +14,9 @@ export class UserController {
   async createUser(@Body() createUserRequestDTO: CreateUserRequestDTO): Promise<ApiResponseDTO<void>> {
     this.logger.verbose(`Visitor is try to creating a new account with title: ${createUserRequestDTO.email}`)
 
-    const userResponseDTO = new UserResponseDTO(await this.userService.createUser(createUserRequestDTO))
+    await this.userService.createUser(createUserRequestDTO)
 
-    this.logger.verbose(`New account email with ${userResponseDTO.email} created Successfully`)
-    return new ApiResponseDTO(true, 201, 'User created Successfully')
+    this.logger.verbose(`New account created Successfully`)
+    return new ApiResponseDTO(true, HttpStatus.CREATED, 'User created Successfully')
   }
 }

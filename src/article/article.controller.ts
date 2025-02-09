@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common'
 import { ArticleService } from './article.service'
 import { Article } from './entities/article.entity'
 import { CreateArticleRequestDTO } from './DTO/create-article-request.dto'
@@ -27,13 +27,13 @@ export class ArticleController {
     // CREATE
     // 게시글 작성 기능
     @Post('/')
-    async createArticle(@Body() createArticleDTO: CreateArticleRequestDTO, @GetUser() logginedUser: User): Promise<ApiResponseDTO<ArticleResponseDTO>> {
+    async createArticle(@Body() createArticleDTO: CreateArticleRequestDTO, @GetUser() logginedUser: User): Promise<ApiResponseDTO<void>> {
         this.logger.verbose(`User: ${logginedUser.username} is try to creating a new article with title: ${createArticleDTO.title}`)
         
-        const articleResponseDTO = new ArticleResponseDTO(await this.articleService.createArticle(createArticleDTO, logginedUser))
+        await this.articleService.createArticle(createArticleDTO, logginedUser)
         
-        this.logger.verbose(`Article title with ${articleResponseDTO.title} created Successfully`)
-        return new ApiResponseDTO(true, 201, 'Article created Successfully', articleResponseDTO)
+        this.logger.verbose(`Article created Successfully`)
+        return new ApiResponseDTO(true, HttpStatus.CREATED, 'Article created Successfully')
     }
 
     // READ: 게시글 조회 기능
@@ -45,7 +45,7 @@ export class ArticleController {
         const articlesResponseDTO = articles.map(article => new ArticleResponseDTO(article))
 
         this.logger.verbose(`Retrieved all articles list Successfully`)
-        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
+        return new ApiResponseDTO(true, HttpStatus.OK, 'Article list retrive Successfully', articlesResponseDTO)
     }
 
     // 나의 게시글 조회 기능
@@ -57,7 +57,7 @@ export class ArticleController {
         const articlesResponseDTO = articles.map(article => new ArticleResponseDTO(article))
 
         this.logger.verbose(`Retrieved ${logginedUser.username}'s all Articles list Successfully`)
-        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
+        return new ApiResponseDTO(true, HttpStatus.OK, 'Article list retrive Successfully', articlesResponseDTO)
     }
     
     // 특정 게시글 조회 기능
@@ -69,7 +69,7 @@ export class ArticleController {
         const articleResponseDTO = new ArticleResponseDTO(await this.articleService.getArticleById(id))
         
         this.logger.verbose(`Retrieved a article by ${id} details Successfully`)
-        return new ApiResponseDTO(true, 200, 'Article retrive Successfully', articleResponseDTO)
+        return new ApiResponseDTO(true, HttpStatus.OK, 'Article retrive Successfully', articleResponseDTO)
     }
     
     @Get('/search/:keyword')
@@ -80,19 +80,19 @@ export class ArticleController {
         const articlesResponseDTO = articles.map(article => new SearchArticleResponseDto(article))
 
         this.logger.verbose(`Retrieved articles list by ${author} Successfully`)
-        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
+        return new ApiResponseDTO(true, HttpStatus.OK, 'Article list retrive Successfully', articlesResponseDTO)
     }
 
     // UPDATE: 게시글 수정 기능
     // 특정 번호의 게시글 수정
     @Put('/:id')
-    async updateArticleById(@Param('id') id: number, @Body() updateArticleDTO: UpdateArticleRequestDTO): Promise<ApiResponseDTO<ArticleResponseDTO>> {
+    async updateArticleById(@Param('id') id: number, @Body() updateArticleDTO: UpdateArticleRequestDTO): Promise<ApiResponseDTO<void>> {
         this.logger.verbose(`Try to Updating a article by id: ${id} with updateArticleDto`)
         
-        const articleResponseDTO = new ArticleResponseDTO(await this.articleService.updateArticleById(id, updateArticleDTO))
+        await this.articleService.updateArticleById(id, updateArticleDTO)
         
         this.logger.verbose(`Updated a article by ${id} Successfully`)
-        return new ApiResponseDTO(true, 200, 'Article updated Successfully', articleResponseDTO)
+        return new ApiResponseDTO(true, HttpStatus.NO_CONTENT, 'Article updated Successfully')
     }
 
     // 특정 번호의 게시글 status 수정 (관리자만 가능)
@@ -105,7 +105,7 @@ export class ArticleController {
 
         this.logger.verbose(`ADMIN Updated a article's by ${id} status to ${status} Successfully`)
 
-        return new ApiResponseDTO(true, 200, 'Article status changed Successfully')
+        return new ApiResponseDTO(true, HttpStatus.NO_CONTENT, 'Article status changed Successfully')
     }
 
     // DELETE: 게시글 삭제 기능
@@ -118,7 +118,7 @@ export class ArticleController {
 
         this.logger.verbose(`Deleted a article by id: ${id} Successfully`)
 
-        return new ApiResponseDTO(true, 200, 'Article deleted Successfully')
+        return new ApiResponseDTO(true, HttpStatus.NO_CONTENT, 'Article deleted Successfully')
     }
 }
     

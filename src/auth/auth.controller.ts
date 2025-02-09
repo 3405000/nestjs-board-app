@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post, Res, } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { SignInUserDTO } from './DTO/sign-in-request.dto'
 import { Response } from 'express'
+import { ApiResponseDTO } from 'src/common/api-response.dto'
 
 @Controller('api/auth')
 export class AuthController {
@@ -16,19 +17,13 @@ export class AuthController {
 
         const accessToken = await this.authService.signIn(signInUserDTO)
 
-        // 2. JWT를 쿠키에 저장
-        // res.cookie('Authorization', accessToken, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     maxAge: 360000,
-        //     sameSite: 'none'
-        // })
-        // res.send({message: "Login Success"})
-
-        // 2. JWT를 헤더에 저장
-        res.setHeader('Authorization', accessToken)
-        res.send({ message: "Login Success", accessToken })
-
         this.logger.verbose(`User with email: ${signInUserDTO.email} issued JWT ${accessToken}`)
+        
+        // 2. JWT를 헤더에 저장 후 ApiResponse를 바디에 담아 전송
+        res.setHeader('Authorization', accessToken)
+        const response = new ApiResponseDTO(true, 200, 'User logged in successfully', { accessToken })
+        
+        res.send(response)
+
     }
 }

@@ -13,6 +13,7 @@ import { UserRole } from 'src/user/user-role.enum'
 import { GetUser } from 'src/auth/get-user.decorator'
 import { User } from 'src/user/user.entity'
 import { SearchArticleResponseDto } from './DTO/search-article-response.dto'
+import { ApiResponseDTO } from 'src/common/api-response.dto'
 
 
 @Controller('api/articles')
@@ -26,94 +27,98 @@ export class ArticleController {
     // CREATE
     // 게시글 작성 기능
     @Post('/')
-    async createArticle(@Body() createArticleDTO: CreateArticleRequestDTO, @GetUser() logginedUser: User): Promise<ArticleResponseDTO> {
+    async createArticle(@Body() createArticleDTO: CreateArticleRequestDTO, @GetUser() logginedUser: User): Promise<ApiResponseDTO<ArticleResponseDTO>> {
         this.logger.verbose(`User: ${logginedUser.username} is try to creating a new article with title: ${createArticleDTO.title}`)
         
         const articleResponseDTO = new ArticleResponseDTO(await this.articleService.createArticle(createArticleDTO, logginedUser))
         
         this.logger.verbose(`Article title with ${articleResponseDTO.title} created Successfully`)
-        return articleResponseDTO
+        return new ApiResponseDTO(true, 201, 'Article created Successfully', articleResponseDTO)
     }
 
     // READ: 게시글 조회 기능
     @Get('/')
-    async getAllArticles(): Promise<ArticleResponseDTO[]> {
+    async getAllArticles(): Promise<ApiResponseDTO<ArticleResponseDTO[]>> {
         this.logger.verbose(`Try to Retrieving all Articles`)
 
         const articles: Article[] = await this.articleService.getAllArticles()
         const articlesResponseDTO = articles.map(article => new ArticleResponseDTO(article))
 
         this.logger.verbose(`Retrieved all articles list Successfully`)
-        return articlesResponseDTO
+        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
     }
 
     // 나의 게시글 조회 기능
     @Get('/myArticles')
-    async getMyAllArticles(@GetUser() logginedUser: User): Promise<ArticleResponseDTO[]> {
+    async getMyAllArticles(@GetUser() logginedUser: User): Promise<ApiResponseDTO<ArticleResponseDTO[]>> {
         this.logger.verbose(`Try to Retrieving ${logginedUser.username}'s all Articles`)
 
         const articles: Article[] = await this.articleService.getMyAllArticles(logginedUser)
         const articlesResponseDTO = articles.map(article => new ArticleResponseDTO(article))
 
         this.logger.verbose(`Retrieved ${logginedUser.username}'s all Articles list Successfully`)
-        return articlesResponseDTO
+        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
     }
     
     // 특정 게시글 조회 기능
     @Get('/:id')
     @Roles(UserRole.USER) // 로그인 유저가 USER만 접근 가능
-    async getArticleById(@Param('id') id: number): Promise<ArticleResponseDTO> {
+    async getArticleById(@Param('id') id: number): Promise<ApiResponseDTO<ArticleResponseDTO>> {
         this.logger.verbose(`Try to Retrieving a article by id: ${id}`)
 
         const articleResponseDTO = new ArticleResponseDTO(await this.articleService.getArticleById(id))
         
         this.logger.verbose(`Retrieved a article by ${id} details Successfully`)
-        return articleResponseDTO
+        return new ApiResponseDTO(true, 200, 'Article retrive Successfully', articleResponseDTO)
     }
     
     @Get('/search/:keyword')
-    async getArticlesByKeword(@Query('author') author: string): Promise<SearchArticleResponseDto[]> {
+    async getArticlesByKeword(@Query('author') author: string): Promise<ApiResponseDTO<SearchArticleResponseDto[]>> {
         this.logger.verbose(`Try to Retrieving a article by author: ${author}`)
 
         const articles: Article[] = await this.articleService.getArticlesByKeword(author)
         const articlesResponseDTO = articles.map(article => new SearchArticleResponseDto(article))
 
         this.logger.verbose(`Retrieved articles list by ${author} Successfully`)
-        return articlesResponseDTO
+        return new ApiResponseDTO(true, 200, 'Article list retrive Successfully', articlesResponseDTO)
     }
 
     // UPDATE: 게시글 수정 기능
     // 특정 번호의 게시글 수정
     @Put('/:id')
-    async updateArticleById(@Param('id') id: number, @Body() updateArticleDTO: UpdateArticleRequestDTO): Promise<ArticleResponseDTO> {
+    async updateArticleById(@Param('id') id: number, @Body() updateArticleDTO: UpdateArticleRequestDTO): Promise<ApiResponseDTO<ArticleResponseDTO>> {
         this.logger.verbose(`Try to Updating a article by id: ${id} with updateArticleDto`)
         
         const articleResponseDTO = new ArticleResponseDTO(await this.articleService.updateArticleById(id, updateArticleDTO))
         
         this.logger.verbose(`Updated a article by ${id} Successfully`)
-        return articleResponseDTO
+        return new ApiResponseDTO(true, 200, 'Article updated Successfully', articleResponseDTO)
     }
 
     // 특정 번호의 게시글 status 수정 (관리자만 가능)
     @Patch('/:id')
     @Roles(UserRole.ADMIN)
-    async updateArticleStatusById(@Param('id') id: number, @Body('status', ArticlesStatusValidationPipe) status:  ArticleStatus): Promise<void> {
+    async updateArticleStatusById(@Param('id') id: number, @Body('status', ArticlesStatusValidationPipe) status:  ArticleStatus): Promise<ApiResponseDTO<void>> {
         this.logger.verbose(`ADMIN is trying to Updating a article by id: ${id} with status: ${status}`)
         
         await this.articleService.updateArticleStatusById(id, status)
 
         this.logger.verbose(`ADMIN Updated a article's by ${id} status to ${status} Successfully`)
+
+        return new ApiResponseDTO(true, 200, 'Article status changed Successfully')
     }
 
     // DELETE: 게시글 삭제 기능
     @Delete('/:id')
     @Roles(UserRole.ADMIN, UserRole.USER)
-    async deleteArticleById(@Param('id') id: number, @GetUser() logginedUser: User): Promise<void> {
+    async deleteArticleById(@Param('id') id: number, @GetUser() logginedUser: User): Promise<ApiResponseDTO<void>> {
         this.logger.verbose(`User: ${logginedUser.username} is trying to Deleting a article by id: ${id}`)
         
         await this.articleService.deleteArticleById(id, logginedUser)
 
         this.logger.verbose(`Deleted a article by id: ${id} Successfully`)
+
+        return new ApiResponseDTO(true, 200, 'Article deleted Successfully')
     }
 }
     

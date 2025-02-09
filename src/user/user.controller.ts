@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserRequestDTO } from 'src/user/DTO/create-user-request.dto'
 import { UserResponseDTO } from 'src/auth/DTO/user-response.dto'
+import { ApiResponseDTO } from 'src/common/api-response.dto'
 
 @Controller('api/user')
 export class UserController {
@@ -10,12 +11,12 @@ export class UserController {
 
   // 회원 가입 기능
   @Post('/')
-  async createUser(@Body() createUserRequestDTO: CreateUserRequestDTO): Promise<UserResponseDTO> {
+  async createUser(@Body() createUserRequestDTO: CreateUserRequestDTO): Promise<ApiResponseDTO<void>> {
     this.logger.verbose(`Visitor is try to creating a new account with title: ${createUserRequestDTO.email}`)
 
     const userResponseDTO = new UserResponseDTO(await this.userService.createUser(createUserRequestDTO))
 
     this.logger.verbose(`New account email with ${userResponseDTO.email} created Successfully`)
-    return userResponseDTO
+    return new ApiResponseDTO(true, 201, 'User created Successfully')
   }
 }

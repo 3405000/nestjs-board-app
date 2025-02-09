@@ -1,5 +1,5 @@
-import { ArticleStatus } from "../article-status.enum"
-import { Article } from "../article.entity"
+import { ArticleStatus } from "../entities/article-status.enum"
+import { Article } from "../entities/article.entity"
 import { UserResponseDTO } from "src/auth/DTO/user-response.dto"
 
 

@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Article } from './article.entity';
-import { ArticleStatus } from './article-status.enum';
+import { Article } from './entities/article.entity';
+import { ArticleStatus } from './entities/article-status.enum';
 import { CreateArticleRequestDTO } from './DTO/create-article-request.dto';
 import { UpdateArticleRequestDTO } from './DTO/update-article-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { SearchArticleResponseDto } from './DTO/search-article-response.dto';
 @Injectable()
 export class ArticleService {

@@ -1,9 +1,9 @@
 import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common'
-import { User } from './user.entity'
+import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CreateUserRequestDTO } from 'src/user/DTO/create-user-request.dto'
-import { UserRole } from './user-role.enum'
+import { UserRole } from './entities/user-role.enum'
 import * as bcrypt from 'bcryptjs'
 
 @Injectable()

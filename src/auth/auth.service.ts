@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
-import { User } from '../user/user.entity';
+import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { SignInUserDTO } from './DTO/sign-in-request.dto';

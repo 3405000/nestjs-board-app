@@ -6,7 +6,7 @@ import { User } from '../user/entities/user.entity'
 import { PassportModule } from '@nestjs/passport'
 import { JwtModule } from '@nestjs/jwt'
 import * as dotenv from 'dotenv' // 환경변수 사용 목적
-import { JwtStrategy } from './jwt.strategy'
+import { JwtStrategy } from './strategies/jwt.strategy'
 import { UserModule } from 'src/user/user.module'
 
 dotenv.config() // 환경변수 사용 목적

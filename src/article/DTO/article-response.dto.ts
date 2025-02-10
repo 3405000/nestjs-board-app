@@ -9,7 +9,7 @@ export class ArticleResponseDTO {
     title: string
     contents: string
     status: ArticleStatus
-    user: UserResponseDTO
+    // user: UserResponseDTO
 
     constructor(article: Article) {
         this.id = article.id
@@ -17,6 +17,6 @@ export class ArticleResponseDTO {
         this.title = article.title
         this.contents = article.contents
         this.status = article.status
-        this.user = new UserResponseDTO(article.user)
+        // this.user = new UserResponseDTO(article.user)
     }
 }
